@@ -1,0 +1,4 @@
+__pycache__/
+*.wav
+/stt/checkpoint/medium.pt
+/tts/checkpoint/G_latest.pth
