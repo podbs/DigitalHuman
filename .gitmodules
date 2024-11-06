@@ -1,0 +1,3 @@
+[submodule "TTS/F5_TTS"]
+	path = TTS/F5_TTS
+	url = https://github.com/podbs/DigitalHuman.git
