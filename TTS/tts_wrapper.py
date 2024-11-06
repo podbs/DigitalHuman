@@ -66,7 +66,7 @@ class TTSWrapper:
             raise ValueError(f"Unsupported model type: {self.model_type}")
 
         # Load model
-        self.model = load_model(model_cls, model_cfg, self.ckpt_file, self.vocab_file)
+        self.model = load_model(model_cls, model_cfg, self.ckpt_file, self.vocab_file, mel_spec_type='vocos')
 
     def __call__(self, ref_audio, ref_text, gen_text):
         """
