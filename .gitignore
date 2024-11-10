@@ -2,3 +2,4 @@ checkpoints
 checkpoints.zip
 ckpts
 __pycache__
+.cache
