@@ -1,4 +1,17 @@
 import gradio as gr
+import json
+import os
+import random
+# file_path = os.path.join(os.getcwd(), 'reference_text.json')
+# print(os.getcwd())
+# debug的话是在根目录下运行的，而运行时就可以进入我的工作目录 此问题怎么解决？
+
+with open('/home/lzh/DigitalHuman/gradio/reference_text.json', 'r', encoding='utf-8') as file:
+    data = json.load(file)
+# print(data)
+# print(data['sentences'][0])
+
+random_number = random.randint(0, 19)
 
 def toggle_text_input(selected_option):
     # 如果选择了某个特定选项，显示输入框，否则隐藏
@@ -29,22 +42,22 @@ with gr.Blocks(css=".center-text { text-align: center; }") as demo:
             with gr.Row():
                 clear_button = gr.Button("清空视频")
                 submit_button = gr.Button("提交视频")
-            output_text = gr.Textbox(label="输出文本", placeholder="请输入您想让虚拟人所说的一段话", lines=5)
+            output_text = gr.Textbox(label="输出文本", placeholder="请输入您想让虚拟人所说的一段话", lines=5, submit_btn=True)
             
             with gr.Accordion("位姿表情参数", open=False):
                 slider1 = gr.Slider(value=1, minimum=1, maximum=100, label="pose_weight")
                 slider2 = gr.Slider(value=1, minimum=1, maximum=100, label="face_weight")
                 slider3 = gr.Slider(value=1, minimum=1, maximum=100, label="lip_weight")
             
-            # 隐藏的文本框，默认不可见
-            correct_translation = gr.Textbox(
-                label="参考文本", 
-                placeholder="若输入视频的字幕有错误，请在此提交正确的翻译", 
-                submit_btn=True, 
-                visible=False,  # 默认不可见
-                lines=5, 
-                interactive=True
-            )
+            # # 隐藏的文本框，默认不可见
+            # correct_translation = gr.Textbox(
+            #     label="更正栏", 
+            #     placeholder="若输入视频的字幕（参考文本）有错误，请在此提交正确的翻译", 
+            #     submit_btn=True, 
+            #     visible=False,  # 默认不可见
+            #     lines=5, 
+            #     interactive=True
+            # )
 
             
             # 为按钮绑定回调函数
@@ -55,15 +68,15 @@ with gr.Blocks(css=".center-text { text-align: center; }") as demo:
             output_video = gr.Video(label="输出视频", interactive=False)
             
             with gr.Column(scale=2):  # 参考文本列，占 2 份空间
-                reference_text = gr.Textbox(label="参考文本", placeholder="输入视频所对应的字幕", lines=5)
+                reference_text = gr.Textbox(label="参考文本",value=data['sentences'][random_number], lines=2, interactive=False)
             
-            with gr.Column(scale=1):  # 选择框列，占 1 份空间
-                dropdown = gr.Dropdown(
-                    label="参考字幕是否正确？", 
-                    choices=["正确", "有误"], 
-                    value="正确"  # 设置默认选项
-                )
-                dropdown.change(toggle_text_input, dropdown, correct_translation)  # 根据选择显示或隐藏参考文本框
+            # with gr.Column(scale=1):  # 选择框列，占 1 份空间
+            #     dropdown = gr.Dropdown(
+            #         label="参考字幕是否正确？", 
+            #         choices=["正确", "有误"], 
+            #         value="正确"  # 设置默认选项
+            #     )
+                # dropdown.change(toggle_text_input, dropdown, correct_translation)  # 根据选择显示或隐藏参考文本框
                 
             
     demo.queue()
