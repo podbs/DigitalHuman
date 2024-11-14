@@ -1,3 +1,8 @@
+checkpoints
+checkpoints.zip
+ckpts
+__pycache__
+.cache
 .gradio
 __pycache__
 ./gradio/reference_video
