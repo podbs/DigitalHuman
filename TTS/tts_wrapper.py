@@ -119,7 +119,8 @@ class TTSWrapper:
         # Save output if needed
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
-        wave_path = Path(self.output_dir) / "generated_output.wav"
+        # wave_path = Path(self.output_dir) / "generated_output.wav"
+        wave_path = Path(self.output_dir) / "output_audio.wav"
         with open(wave_path, "wb") as f:
             sf.write(f.name, final_wave, final_sample_rate)
 

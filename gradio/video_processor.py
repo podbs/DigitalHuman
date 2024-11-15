@@ -1,5 +1,6 @@
 import cv2
-import ffmpeg
+# import ffmpeg
+from moviepy.editor import VideoFileClip
 
 class VideoProcessor:
     def __init__(self, video_path, output_image_path):
@@ -31,15 +32,24 @@ class VideoProcessor:
         cap.release()
         return True
     def video_to_audio(self, input_file, output_file):
+
         try:
-            stream = ffmpeg.input(input_file)
-            stream = ffmpeg.output(stream, output_file)
-            ffmpeg.run(stream)
-            print(f"音频已成功保存到：{output_file}")
+            # 加载MP4视频
+            video = VideoFileClip(input_file)
+            
+            # 提取音频
+            audio = video.audio
+            
+            # 保存音频为WAV格式
+            audio.write_audiofile(output_file)
+            
+            print("音频提取并保存为WAV格式成功！")
             return True
-        except ffmpeg.Error as e:
-            print(f"转换视频到音频时出错：{e}")
+        
+        except Exception as e:
+            print(f"发生错误：{e}")
             return False
+
 
     
 
