@@ -15,3 +15,8 @@ pip install .
 cd ..
 python Tests/test_adfa.py
 ```
+
+## GUI to start
+```shell
+gradio gradio/app.py
+```
