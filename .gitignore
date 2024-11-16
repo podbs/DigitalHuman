@@ -7,3 +7,5 @@ __pycache__
 ./gradio/reference_video/*
 ./recordings/output_audio/*
 ./recordings/ref_aduio/*
+./recordings/output_video/*
+./recordings/reference_images/user_face.jpg

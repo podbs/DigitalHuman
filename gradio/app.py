@@ -5,6 +5,7 @@ import os
 import random
 import os
 import sys
+import time
 from video_processor import VideoProcessor
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -13,19 +14,21 @@ sys.path.append(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__f
 from TTS.tts_wrapper import TTSWrapper
 
 sys.path.append('.')
-print(sys.path)
+# print(sys.path)
 from ADFA.adfa_wrapper import ADFAWrapper
-print(os.getcwd())
-ref_audio_path = '/home/lzh/DigitalHuman/recordings/ref_aduio/ref_audio.wav'                #用户输入的音频存储的地址
+print("正在工作的目录是："+os.getcwd())
+print("我想找的是："+os.path.join(os.getcwd(), "recordings/output_aduio/output_audio.wav"))
+
+ref_audio_path = './recordings/ref_aduio/ref_audio.wav'                #用户输入的音频存储的地址
 ref_video_path = './gradio/reference_video/saved_video.mp4'                    #用户输入的视频存储的地址
-output_image_path = '/home/lzh/DigitalHuman/recordings/reference_images/user_face.jpg'    #用户正面照存储的地址
-output_aduio_path = "./recordings/output_aduio/output_audio.wav"   #输出音频存储的地址
-output_video_path = "./recordings/output_video/output_video.mp4"       #输出视频存储的地址
+output_image_path = 'recordings/reference_images/user_face.jpg'    #用户正面照存储的地址
+output_aduio_path = "recordings/output_audio/output_audio.wav"   #输出音频存储的地址
+output_video_path = "recordings/output_video/output_video.mp4"       #输出视频存储的地址
 
 # file_path = os.path.join(os.getcwd(), 'reference_text.json')
 # print(os.getcwd())
 # debug的话是在根目录下运行的，而运行时就可以进入我的工作目录 此问题怎么解决？
-
+polling_interval = 5
 
 class UserData:
     def __init__(self, ref_text='', output_text='' ,pose_weight=1, face_weight=1, lip_weight=1):
@@ -106,10 +109,10 @@ def generate_video(ref_text, output_text, pose_weight, face_weight, lip_weight):
         print("人脸提取失败")
     
     #提取音频(ref_audio)
-    # if processor.video_to_audio(ref_video_path, ref_audio_path):
-    #     print("音频提取成功")
-    # else:
-    #     print("音频提取失败")
+    if processor.video_to_audio(ref_video_path, ref_audio_path):
+        print("音频提取成功")
+    else:
+        print("音频提取失败")
         
     #生成音频(output_audio)
     tts = TTSWrapper(
@@ -128,22 +131,30 @@ def generate_video(ref_text, output_text, pose_weight, face_weight, lip_weight):
     
     #然后生成视频(output_video)
     ADFA_wrapper = ADFAWrapper(config_path='ADFA/config/custom.yaml')
-    Output_video_path = ADFA_wrapper(
-        source_image_path=output_image_path,
-        driving_audio_path=output_aduio_path,
-        output_path=output_video_path,
-        pose_weight=user_data.pose_weight,
-        face_weight=user_data.face_weight,
-        lip_weight=user_data.lip_weight
-    )
+    # time.sleep(polling_interval * 4)  # 等待指定时间后再检查
+    while True:
+        if os.path.exists(output_aduio_path):
+            print("文件存在")
+            Output_video_path = ADFA_wrapper(
+                source_image_path=output_image_path,
+                driving_audio_path=output_aduio_path,
+                output_path=output_video_path,
+                pose_weight=pose_weight,
+                face_weight=face_weight,
+                lip_weight=lip_weight
+            )
+            break  # 如果找到文件，退出轮询
+        else:
+            print("文件不存在，继续检查...")
+        time.sleep(polling_interval)  # 等待指定时间后再次检查
     
     return Output_video_path
 
 def on_generate_button_click(ref_text, output_text, pose_weight, face_weight, lip_weight):
     video_path = generate_video(ref_text, output_text, pose_weight, face_weight, lip_weight)
-    gr.Video.update(value=video_path)  # 更新输出视频
+    # gr.Video.update(value=video_path)  # 更新输出视频
 
-    return video_path
+    return gr.Video(value=video_path)
 
 if __name__ == '__main__':
     with gr.Blocks(css=".center-text { text-align: center; }") as demo:
@@ -161,9 +172,9 @@ if __name__ == '__main__':
                 output_text.submit(submit_text, output_text)   #此处把outputtext给设为0了
                 
                 with gr.Accordion("位姿表情参数", open=False):
-                    slider1 = gr.Slider(value=0, minimum=0, maximum=1, label="pose_weight", step=0.05)
-                    slider2 = gr.Slider(value=0, minimum=0, maximum=1, label="face_weight", step=0.05)
-                    slider3 = gr.Slider(value=0, minimum=0, maximum=1, label="lip_weight", step=0.05)
+                    slider1 = gr.Slider(value=1, minimum=0, maximum=1, label="pose_weight", step=0.05)
+                    slider2 = gr.Slider(value=1, minimum=0, maximum=1, label="face_weight", step=0.05)
+                    slider3 = gr.Slider(value=1, minimum=0, maximum=1, label="lip_weight", step=0.05)
                 
                 slider1.change(update_slider1, slider1, None)
                 slider2.change(update_slider2, slider2, None)
