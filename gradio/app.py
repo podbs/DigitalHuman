@@ -16,8 +16,8 @@ from TTS.tts_wrapper import TTSWrapper
 sys.path.append('.')
 # print(sys.path)
 from ADFA.adfa_wrapper import ADFAWrapper
-print("正在工作的目录是："+os.getcwd())
-print("我想找的是："+os.path.join(os.getcwd(), "recordings/output_aduio/output_audio.wav"))
+# print("正在工作的目录是："+os.getcwd())
+# print("我想找的是："+os.path.join(os.getcwd(), "recordings/output_aduio/output_audio.wav"))
 
 ref_audio_path = './recordings/ref_aduio/ref_audio.wav'                #用户输入的音频存储的地址
 ref_video_path = './gradio/reference_video/saved_video.mp4'                    #用户输入的视频存储的地址
@@ -40,12 +40,13 @@ class UserData:
         
 user_data = UserData()
 
-with open('/home/lzh/DigitalHuman/gradio/reference_text.json', 'r', encoding='utf-8') as file:
+with open('./gradio/reference_text.json', 'r', encoding='utf-8') as file:
     data = json.load(file)
 # print(data)
 # print(data['sentences'][0])
 
-random_number = random.randint(0, 19)
+sentences_len = len(data['sentences'])
+random_number = random.randint(0, sentences_len)
 
 
 def clear_video(video):
@@ -185,7 +186,7 @@ if __name__ == '__main__':
                 clear_button.click(clear_video, inputs=input_video, outputs=input_video)  # 清空视频输入
                 submit_button.click(submit_video, inputs=input_video, outputs=input_video)  # 提交视频
             with gr.Column(scale=1):  # 参考文本列
-                reference_text = gr.Textbox(label="参考文本",value=data['sentences'][random_number], lines=2, interactive=False)
+                reference_text = gr.Textbox(label="参考文本",value=data['sentences'][-1], lines=2, interactive=False)
                 user_data.ref_text = data['sentences'][random_number]
                 output_video = gr.Video(label="输出视频", interactive=False, show_download_button=True)
                 with gr.Row():
