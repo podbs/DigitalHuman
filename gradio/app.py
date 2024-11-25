@@ -19,7 +19,7 @@ from ADFA.adfa_wrapper import ADFAWrapper
 # print("正在工作的目录是："+os.getcwd())
 # print("我想找的是："+os.path.join(os.getcwd(), "recordings/output_aduio/output_audio.wav"))
 
-ref_audio_path = './recordings/ref_aduio/ref_audio.wav'                #用户输入的音频存储的地址
+ref_audio_path = './recordings/ref_audio/ref_audio.wav'                #用户输入的音频存储的地址
 ref_video_path = './gradio/reference_video/saved_video.mp4'                    #用户输入的视频存储的地址
 output_image_path = 'recordings/reference_images/user_face.jpg'    #用户正面照存储的地址
 output_aduio_path = "recordings/output_audio/output_audio.wav"   #输出音频存储的地址
@@ -186,7 +186,7 @@ if __name__ == '__main__':
                 clear_button.click(clear_video, inputs=input_video, outputs=input_video)  # 清空视频输入
                 submit_button.click(submit_video, inputs=input_video, outputs=input_video)  # 提交视频
             with gr.Column(scale=1):  # 参考文本列
-                reference_text = gr.Textbox(label="参考文本",value=data['sentences'][-1], lines=2, interactive=False)
+                reference_text = gr.Textbox(label="参考文本",value=data['sentences'][random_number], lines=2, interactive=False)
                 user_data.ref_text = data['sentences'][random_number]
                 output_video = gr.Video(label="输出视频", interactive=False, show_download_button=True)
                 with gr.Row():
